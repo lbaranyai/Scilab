@@ -4,5 +4,5 @@ The project SHEET is part of the ERA-NET Cofund ICT-AGRI-FOOD, with funding prov
 
 Here you can find Scilab codes and models created for the project.
 
-Thermodynamic model
-3D visualization
+* Thermodynamic model
+* 3D visualization
