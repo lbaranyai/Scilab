@@ -159,10 +159,7 @@ function ShowPicture(handles)
         handles.edMean.string = msprintf("%.4f",dv(1));
         handles.edStdev.string = msprintf("%.4f",dv(2));
         // Get normalized histogram with 50 elements
-        hn = histc(tmp2,50,'countsNorm');
-        // Calculate bin values for contrast computation
-        hc = 1:length(hn);
-        hc = min(tmp2) + (hc  - 1).*(max(tmp2) - min(tmp2))/length(hn);
+        [hn, jk, hc] = histc(tmp2,50,'countsNorm');
         // Calculation of parameters
         for i = 1:length(hn)
             dv(3) = dv(3) +  hn(i)*hc(i)^2; // contrast
