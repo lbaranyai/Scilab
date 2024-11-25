@@ -38,7 +38,8 @@ handles.PicTypes = ["Original",...
 "WI (Woebbecke Index)","BI (Brightness Index)",...
 "RGCh (Red-Green Chromaticity)","RBCh (Red-Blue Chromaticity)","GBCh (Green-Blue Chromaticity)","GRCh (Green-Red Chromaticity)","BRCh (Blue-Red Chromaticity)","BGCh (Blue-Green Chromaticity)",...
 "MGRVI (Modified Green-Red Vegeation Index)","RGRI (Red-Green Ratio Index)","BGRI (Blue-Green Ratio Index)","GLI (Green leaf index)","VARI (Visible atmospherically resistance index)",...
-"ExR (Excess red vegetation index)","ExG (Excess green vegetation index)","ExB (Excess blue vegetation index)","ExGR (Excess green-Excess red)"];
+"ExR (Excess red vegetation index)","ExG (Excess green vegetation index)","ExB (Excess blue vegetation index)","ExGR (Excess green-Excess red)",...
+"Red intensity","Green intensity","Blue intensity"];
 
 // User controls
 handles.pbOpen = uicontrol(f,"style","pushbutton","string","Open picture","units","normalized","position",[0.02 0.9 0.2 0.06],"callback","fnOpen(handles)");
@@ -77,7 +78,8 @@ function fnCapture(handles)
         // Save to session and adjust UI
         handles.PIC = tmp;
         handles.FName = "capture.jpg";
-        handles.txtFile.string = "File: (captured)";
+        [ph,pw,pl] = size(tmp);
+        handles.txtFile.string = msprintf("File: (captured) [ %d x %d ]",pw,ph);
         handles.lbPicType.enable = "on";
         handles.cbScale.enable = "on";
         handles.pbSave.enable = "on";
@@ -103,7 +105,8 @@ function fnOpen(handles)
         handles.PIC = tmp;
         // Save filename to session and adjust UI
         handles.FName = fullfile(PathName, FileName);
-        handles.txtFile.string = msprintf("File: %s",FileName);
+        [ph,pw,pl] = size(tmp);
+        handles.txtFile.string = msprintf("File: %s [ %d x %d ]",FileName,pw,ph);
         handles.lbPicType.enable = "on";
         handles.cbScale.enable = "on";
         handles.pbSave.enable = "on";
@@ -160,14 +163,13 @@ function ShowPicture(handles)
         handles.edStdev.string = msprintf("%.4f",dv(2));
         // Get normalized histogram with 50 elements
         [hn, jk, hc] = histc(tmp2,50,'countsNorm');
-        // Calculation of parameters
-        for i = 1:length(hn)
-            dv(3) = dv(3) +  hn(i)*hc(i)^2; // contrast
-            dv(4) = dv(4) +  hn(i)^2; // energy
-            if hn(i) > 0 then
-                dv(5) = dv(5) + hn(i)*log10(hn(i)); // entropy
-            end
-        end
+        // Use bin edges for contrast
+        hc = hc(1:length(hn));
+        dv(3) = sum( hn .* hc.^2 ); // Contrast
+        dv(4) = sum( hn.^2 ); // Energy
+        // Failsafe check to prevent log(0)
+        hn = hn(hn > 0);
+        dv(5) = -1.0*sum( hn .* log10(hn) ); // Entropy
         handles.edContrast.string = msprintf("%.4f",dv(3));
         handles.edEnergy.string = msprintf("%.4f",dv(4));
         handles.edEntropy.string = msprintf("%.4f",dv(5));
@@ -385,6 +387,18 @@ function GetCMap(handles)
         pb = pb./ss; 
         handles.PData = 3*pg - 2.4*pr - pb;
         handles.PRange = [-2.4 3];
+    case 31 then
+        // R
+        handles.PData = pr;
+        handles.PRange = [0 255];
+    case 32 then
+        // G
+        handles.PData = pg;
+        handles.PRange = [0 255];
+    case 33 then
+        // B
+        handles.PData = pb;
+        handles.PRange = [0 255];
     else
         // Failsafe feedback
         messagebox("Unknown option.","Error","error","modal");
