@@ -397,6 +397,9 @@ endfunction
 function fnSaveAllData(handles)
     // Scanning takes time, prevent user triggered event
     handles.lbPicType.enable = "off";
+    handles.pbOpen.enable = "off";
+    handles.pbCapture.enable = "off";
+    handles.pbSave.enable = "off";
     // Exclude original color picture
     n = size(handles.PicTypes)(2) - 1;
     // Container of results
@@ -433,5 +436,8 @@ function fnSaveAllData(handles)
     // Reset progress indicator and enable user selection
     handles.hProgress.string = "";
     handles.lbPicType.enable = "on";
+    handles.pbOpen.enable = "on";
+    handles.pbCapture.enable = "on";
+    handles.pbSave.enable = "on";
     handles = resume(handles);
 endfunction
