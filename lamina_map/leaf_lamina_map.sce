@@ -2,6 +2,21 @@
 // Color index methodology - Dr. Péter Bodor-Pesti
 // Computer Vision - Dr. László Baranyai, lbaranyai@github
 
+// Check required IPCV module
+if atomsIsLoaded("IPCV") == %F then
+    messagebox("IPCV toolbox is missing. Try automatic loading.","Error","error","modal");
+    result = atomsLoad("IPCV");
+    if atomsIsLoaded("IPCV") == %F then
+        messagebox("Cannot load IPCV toolbox. Try install.","Error","error","modal");
+        result = atomsInstall("IPCV");
+        result = atomsLoad("IPCV");
+        if atomsIsLoaded("IPCV") == %F then
+            messagebox("Cannot install IPCV toolbox. Please consult the application Module manager - ATOMS.","Error","error","modal");
+            error("Error: Cannot install and load IPCV toolbox.");
+        end
+    end
+end
+
 // Main Application Window
 f = figure("figure_size", [1000 702],"figure_name", "Lamina Map v1.0","dockable","off","infobar_visible","off","toolbar_visible","off","menubar_visible","off","default_axes","on","auto_resize","on","backgroundcolor",[0.8,0.8,0.8]);
 
